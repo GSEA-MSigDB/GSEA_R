@@ -1,0 +1,15 @@
+Package: GSEA
+Type: Package
+Title: Gene Set Enrichment Analysis (GSEA)
+Version: 1.2
+Date: 2019-09-16
+Authors@R: c(person("Aravind", "Subramanian", role="aut"), person("Pablo", "Tamayo", role="aut"), person("Anthony", "Castanza", email="acastanza@ucsd.edu", role = c("aut", "cre")))
+Depends: R (>= 3.6.0), dplyr (>= 0.8.3)
+URL: http://gsea-msigdb.org
+Description: This is a methodology for the analysis of global molecular profiles called Gene Set Enrichment Analysis (GSEA). It determines whether an a priori defined set of genes shows statistically significant, concordant differences between two biological states (e.g. phenotypes). GSEA operates on all genes from an experiment, rank ordered by the signal to noise ratio and determines whether members of an a priori defined gene set are nonrandomly distributed towards the top or bottom of the list and thus may correspond to an important biological process. To assess significance the program uses an empirical permutation procedure to test deviation from random that preserves correlations between genes.  For details see Subramanian et al 2005.
+License: file LICENSE
+RoxygenNote: 6.1.1
+Encoding: UTF-8
+Imports:
+	dplyr,
+	rlang
