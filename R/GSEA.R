@@ -314,7 +314,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
   dataset <- dataset[match(unique(dataset$NAME), dataset$NAME), ]
   dataset.ann <- as.data.frame(dataset[, 1], stringsAsFactors = FALSE, header = FALSE)
   rownames(dataset) <- dataset[, 1]
-  dataset = subset(dataset, select = -c(.data$NAME))
+  dataset = subset(dataset, select = -c(1))
   gene.labels <- row.names(dataset)
   dataset.ann <- cbind(dataset.ann, "NA", stringsAsFactors = FALSE)
   colnames(dataset.ann)[1] <- "Gene.Symbol"

@@ -140,11 +140,11 @@ procedure to test deviation from random that preserves correlations between
 genes.  For details see Subramanian et al 2005.
 }
 \examples{
-GSEA(input.ds = system.file('extdata', 'Leukemia_hgu95av2.gct', package = 'GSEA', mustWork = TRUE), 
-input.cls = system.file('extdata', 'Leukemia.cls', package = 'GSEA', mustWork = TRUE), 
-input.chip = system.file('extdata', 'Human_AFFY_HG_U95_MSigDB_7_0_final.chip', 
-package = 'GSEA', mustWork = TRUE), gs.db = system.file('extdata', 
-'h.all.v7.0.symbols.gmt', package = 'GSEA', mustWork = TRUE), 
+GSEA(input.ds = system.file('extdata', 'Leukemia_hgu95av2.gct', package = 'GSEA', mustWork = TRUE),
+input.cls = system.file('extdata', 'Leukemia.cls', package = 'GSEA', mustWork = TRUE),
+input.chip = system.file('extdata', 'Human_AFFY_HG_U95_MSigDB_7_0_final.chip',
+package = 'GSEA', mustWork = TRUE), gs.db = system.file('extdata',
+'h.all.v7.0.symbols.gmt', package = 'GSEA', mustWork = TRUE),
 collapse.dataset = TRUE, collapse.mode = 'max')
 
 }
