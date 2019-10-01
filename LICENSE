@@ -1,64 +1,23 @@
 ---------------------------------------------------------------- 
 **** LICENSE AGREEMENT **** 
 ---------------------------------------------------------------- 
-MASSACHUSETTS INSTITUTE OF TECHNOLOGY 
-SINGLE USER LICENSE AGREEMENT FOR INTERNAL RESEARCH PURPOSES ONLY 
 
-This Agreement is made between Massachusetts Institute of Technology with a principal address at 77 Massachusetts Avenue, Cambridge, MA 02139 ("MIT") and the subscriber above ("LICENSEE"), and is effective at the date the downloading is completed and proper registration/licensee subscriber information submitted ("EFFECTIVE DATE"). 
+GSEA is distributed under the following BSD-style license:
 
-WHEREAS, LICENSEE desires to license the PROGRAM and/or DATABASE, as defined hereinafter, MIT wishes to have this PROGRAM and DATABASE utilized in the public interest, subject only to the royalty-free, nonexclusive, nontransferable license rights of the United States Government pursuant to 48 CFR 52.227-14, and 
+Copyright © 2003-2019 The Broad Institute, Inc., Massachusetts Institute of Technology and Regents of the University of California. All rights reserved.
 
-WHEREAS, LICENSEE desires to license the PROGRAM and/or DATABASE and MIT desires to grant a license on the following terms and conditions.
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-NOW, THEREFORE, in consideration of the promises and covenants made herein, the parties hereto agree as follows: 
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 
-1. DEFINITIONS 
-1.1 "BUG FIX(ES)" shall mean LICENSEE-created code that repairs a MIT identified function of the PROGRAM. 
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-1.2 "PROGRAM" shall mean the executable and source code known as "Gene Set Enrichment Analysis (GSEA)" and related documentation, if any, as they exist on the EFFECTIVE DATE and as can be downloaded from http://www.broadinstitute.org/gsea/ on the EFFECTIVE DATE. 
+3. Neither the names of the copyright holders nor the names of their contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-1.3 "DATABASE" shall mean the database of gene sets known as "Molecular Signatures Database (MSigDB)" and related documentation, if any, as it exists on the EFFECTIVE DATE and as can be downloaded from http://www.broadinstitute.org/gsea/msigdb/ on the EFFECTIVE DATE. 
+THIS SOFTWARE IS PROVIDED “AS IS.” THE COPYRIGHT HOLDERS MAKE NO EXPRESS OR 
+IMPLIED REPRESENTATIONS OR WARRANTIES OF ANY KIND REGARDING THE SOFTWARE AND 
+COPYRIGHT, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, CONFORMITY WITH ANY DOCUMENTATION, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, WHETHER OR NOT DISCOVERABLE. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF, HAVE REASON TO KNOW, OR IN FACT SHALL KNOW OF THE POSSIBILITY OF SUCH DAMAGE.
 
-2. LICENSE 
-2.1 Grant. Subject to the terms of this Agreement, MIT hereby grants to LICENSEE, solely for a single user and for internal research purposes, a non-exclusive, non-transferable license to:
-(a) install, execute and display the PROGRAM, only for the single user; 
-(b) create BUG FIXES; and (c) modify the PROGRAM only for the purpose of making the PROGRAM compatible with pre-existing LICENSEE networks, platforms and applications. Further subject to the terms of this Agreement, MIT also grants to LICENSEE, solely for a single user and for internal research purposes, a non-exclusive, non-transferable license to copy, display, and use the DATABASE. 
+If, by operation of law or otherwise, any of the aforementioned warranty disclaimers are determined inapplicable, your sole remedy, regardless of the form of action, including, but not limited to, negligence and strict liability, shall be replacement of the software with an updated version if one exists.
 
-2.2 No Sublicensing or Additional Rights. In no event shall LICENSEE sublicense or distribute, in whole or in part, the PROGRAM, modifications, BUG FIXES, or the DATABASE, without prior permission from MIT. LICENSEE agrees not to allow any non-employee of LICENSEE to access, view, or use the PROGRAM or the DATABASE, unless such person is an independent contractor performing services on behalf of LICENSEE. LICENSEE agrees not to put the PROGRAM or the DATABASE on a network, server, or other similar technology that may be accessed by any individual other than the LICENSEE. 
-
-2.3 License Limitations. Nothing in this Agreement shall be construed to confer any rights upon LICENSEE by implication, estoppel, or otherwise to any computer software, trademark, intellectual property, or patent rights of MIT, the Broad Institute, Inc. ("BROAD"), or of any other entity, except as expressly granted herein. LICENSEE agrees that neither the PROGRAM nor the DATABASE shall be used as the basis of a commercial software or hardware product and that the same shall not be rewritten in another computer language or otherwise adapted to circumvent the need for obtaining a license for use of the PROGRAM or the DATABASE other than as specified by this Agreement. 
-
-
-3. CONSIDERATION 
-As consideration for the licenses granted in this Agreement, LICENSEE agrees to provide accurate registration information prior to using the PROGRAM or the DATABASE and a written evaluation of the PROGRAM and the DATABASE, including a description of its functionality or problems and areas for further improvement in the PROGRAM or the DATABASE. LICENSEE hereby automatically grants to MIT a non-exclusive, royalty-free, irrevocable worldwide license to any BUG FIXES or modifications to the PROGRAM with unlimited rights to sublicense and/or distribute. Such modifications and BUG FIXES shall be provided to MIT promptly upon their creation. 
-
-4. OWNERSHIP OF INTELLECTUAL PROPERTY 
-LICENSEE acknowledges that title to the PROGRAM and the DATABASE shall remain with MIT. To the extent the PROGRAM or the DATABASE is marked with a MIT copyright notice, or notice of attribution to contributors, LICENSEE shall retain such notice on all copies, and on modifications and BUG FIXES where applicable. Should LICENSEE incorporate any data from the DATABASE into any software or database, LICENSEE agrees to retain, to the extent the DATABASE is marked with a MIT copyright notice or notice of attribution to contributors, such notice. LICENSEE shall be entitled to establish all proprietary rights for itself in the modifications or BUG FIXES created pursuant to Section 2.1, whether in the nature of trade secrets or copyrights, provided that all such rights are subject to MIT's copyright and that any copyright registration by LICENSEE gives full attribution to MIT's copyright. 
-
-5. INDEMNIFICATION 
-LICENSEE shall indemnify, defend, and hold harmless MIT, BROAD, and their respective trustees, officers, faculty, students, employees, affiliated investigators, and agents, and their respective successors, heirs and assigns, ("Indemnitees"), against any liability, damage, loss, or expense (including reasonable attorneys fees and expenses) incurred by or imposed upon any of the Indemnitees in connection with any claims, suits, actions, demands or judgments arising out of any theory of liability (including, without limitation, actions in the form of tort, warranty, or strict liability and regardless of whether such action has any factual basis) pursuant to any right or license granted under this Agreement. 
-
-6. NO REPRESENTATIONS OR WARRANTIES 
-THE PROGRAM AND THE DATABASE ARE  DELIVERED "AS IS." MIT AND BROAD MAKE NO REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE PROGRAM, THE DATABASE, OR THE COPYRIGHT, EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, WHETHER OR NOT DISCOVERABLE. MIT AND BROAD EXTEND NO WARRANTIES OF ANY KIND AS TO PROGRAM OR DATABASE CONFORMITY WITH WHATEVER USER MANUALS OR OTHER LITERATURE MAY BE ISSUED FROM TIME TO TIME. IN NO EVENT SHALL MIT, BROAD, OR THEIR RESPECTIVE TRUSTEES, DIRECTORS, OFFICERS, EMPLOYEES, AFFILIATED INVESTIGATORS, AND AFFILIATES BE LIABLE FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES OF ANY KIND, INCLUDING, WITHOUT LIMITATION, ECONOMIC DAMAGES OR INJURY TO PROPERTY AND LOST PROFITS, REGARDLESS OF WHETHER MIT OR BROAD SHALL BE ADVISED, SHALL HAVE OTHER REASON TO KNOW, OR IN FACT SHALL KNOW OF THE POSSIBILITY OF THE FOREGOING. 
-
-
-
-7. ASSIGNMENT 
-This Agreement is personal to LICENSEE and any rights or obligations assigned by LICENSEE without the prior written consent of MIT shall be null and void. 
-
-8. MISCELLANEOUS 
-8.1 Export Control. LICENSEE gives assurance that it will comply with all United States export control laws and regulations controlling the export of the PROGRAM or the DATABASE, including, without limitation, all Export Administration Regulations of the United States Department of Commerce. Among other things, these laws and regulations prohibit, or require a license for, the export of certain types of software to specified countries. 
-
-8.2 Non-Use Of Name. LICENSEE shall not use any trademark or trade name of MIT or BROAD, or any variation, adaptation, or abbreviation, of such marks or trade names, or any names of trustees, officers, faculty, students, employees, or agents of MIT without the prior written consent of MIT or BROAD. 
-
-8.3 Termination. LICENSEE shall have the right to terminate this Agreement for any reason upon prior written notice to MIT. If LICENSEE breaches any provision hereunder, and fails to cure such breach within thirty (30) days, MIT may terminate this Agreement immediately. Upon termination, LICENSEE shall provide MIT with written assurance that the original and all copies of the PROGRAM and the DATABASE, including partial copies of the PROGRAM in modifications, have been destroyed, except that, upon prior written authorization from MIT, LICENSEE may retain a copy for archive purposes. 
-
-8.4 Survival. The following provisions shall survive the expiration or termination of this Agreement:  Articles 1, 5, 6 and Sections 2.2, 2.3, 8.2, 8.4 and 8.5. 
-
-8.5 Notice. Any notices under this Agreement shall be in writing, shall specifically refer to this Agreement, and shall be sent by hand, recognized national overnight courier, confirmed facsimile transmission, confirmed electronic mail, or registered or certified mail, postage prepaid, return receipt requested All notices under this Agreement shall be deemed effective upon receipt. 
-
-8.6 Amendment And Waiver; Entire Agreement. This Agreement may be amended, supplemented, or otherwise modified only by means of a written instrument signed by all parties. Any waiver of any rights or failure to act in a specific instance shall relate only to such instance and shall not be construed as an agreement to waive any rights or fail to act in any other instance, whether or not similar. This Agreement constitutes the entire agreement among the parties with respect to its subject matter and supersedes prior agreements or understandings between the parties relating to its subject matter. MIT shall not be bound by any provisions on the face or reverse side of any LICENSEE Purchase Order relating to the PROGRAM or the DATABASE, or any LICENSEE attachment to a Purchase Order, that are inconsistent with or in addition to the provisions of this Agreement. 
-
-8.7 Binding Effect; Headings. This Agreement shall be binding upon and inure to the benefit of the parties and their respective permitted successors and assigns. All headings are for convenience only and shall not affect the meaning of any provision of this Agreement. 
-
-8.8 Governing Law. This Agreement shall be construed, governed, interpreted and applied in accordance with the internal laws of the Commonwealth of Massachusetts, U.S.A., without regard to conflict of laws principles. 
+Development of GSEA was funded, in whole or in part, by the National Institutes of Health.
