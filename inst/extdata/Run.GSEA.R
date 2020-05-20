@@ -113,7 +113,6 @@ GSEA(
  output.directory      = outdir,        # Directory where to store output and results (default: "")
 #  Program parameters :-------------------------------------------------------------------------------
  doc.string            = outname,         # Documentation string used as a prefix to name result files (default: "GSEA.analysis")
- non.interactive.run   = F,               # Run in interactive (i.e. R GUI) or batch (R command line) mode (default: F)
  reshuffling.type      = permutation,     # Type of permutation reshuffling: "sample.labels" or "gene.labels" (default: "sample.labels"
  nperm                 = as.integer(nperms),            # Number of random permutations (default: 1000)
  weighted.score.type   =  1,              # Enrichment correlation-based weighting: 0=no weight (KS), 1= weigthed, 2 = over-weigthed (default: 1)
