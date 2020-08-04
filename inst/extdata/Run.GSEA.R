@@ -79,10 +79,11 @@ if (file_ext(inputds) != "rnk") {
   if (use.ttest == TRUE & !is.na(use.ttest)) {
    rankmetric <- "ttest"
   } else if (use.ttest == FALSE) {
-   use.seq <- askYesNo("Use DESeq2 Log2(FC) to rank genes? ")
+   use.seq <- askYesNo("Use DESeq2 to calculate Log2(FC) to rank genes? ")
    if (use.seq == TRUE & !is.na(use.seq)) {
     rankmetric <- "seq"
-   } else {
+   }
+  } else {
    cat("No other ranking metrics implemented. Defaulting to S2N.\n")
    rankmetric <- "S2N"
   }
