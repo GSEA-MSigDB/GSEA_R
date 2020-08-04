@@ -224,6 +224,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
     dataset <- GSEA.Gct2Frame(filename = input.ds)
    }
    colnames(dataset)[1] <- "NAME"
+   colnames(dataset)[2] <- "Description"
    dataset <- dataset[match(unique(dataset$NAME), dataset$NAME), ]
    dataset.ann <- dataset[, c("NAME", "Description")]
    colnames(dataset.ann)[1] <- "Gene.Symbol"
@@ -386,6 +387,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  
  if (exists("chip") == TRUE) {
   gene.ann <- unique(chip[, c("Gene.Symbol", "Gene.Title")])
+  print(c("Replacing gene descriptions from input dataset with annotations from mapping CHIP."))
  }
  if (exists("chip") == FALSE) {
   gene.ann <- dataset.ann
@@ -960,7 +962,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  
  report <- data.frame(cbind(gs.names, size.G, all.gs.descs, Obs.ES, Obs.ES.norm, 
   p.vals[, 1], FDR.mean.sorted, p.vals[, 2], tag.frac, gene.frac, signal.strength, 
-  FDR.median.sorted, glob.p.vals.sorted))
+  FDR.median.sorted, glob.p.vals.sorted), stringsAsFactors = FALSE)
  names(report) <- c("GS", "SIZE", "SOURCE", "ES", "NES", "NOM p-val", "FDR q-val", 
   "FWER p-val", "Tag %", "Gene %", "Signal", "FDR (median)", "glob.p.val")
  # print(report)
@@ -1019,6 +1021,11 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
   if (rank.metric == "ttest") {
    x <- plot(location, obs.rnk, ylab = "T-Test", xlab = "Gene List Location", 
     main = "Gene List Correlation (T-Test) Profile", type = "l", lwd = 2, 
+    cex = 0.9, col = 1)
+  }
+  if (rank.metric == "seq") {
+   x <- plot(location, obs.rnk, ylab = "DESeq2 Log2(FC)", xlab = "Gene List Location", 
+    main = "Gene List Correlation (Log2(FC)) Profile", type = "l", lwd = 2, 
     cex = 0.9, col = 1)
   }
  } else if (gsea.type == "preranked") {
@@ -1283,6 +1290,10 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
       if (rank.metric == "ttest") {
      names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
        "TTest", "RES", "CORE_ENRICHMENT")
+      }
+      if (rank.metric == "seq") {
+     names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+       "DESeq2 Log2(FC)", "RES", "CORE_ENRICHMENT")
       }
     } else if (gsea.type == "preranked") {
       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
