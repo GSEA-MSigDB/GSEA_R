@@ -254,8 +254,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   
   obs.rnk.matrix <- M1/S1
   gc()
- }
- if (rank.metric == "ttest") {
+ } else if (rank.metric == "ttest") {
   # compute TTest for the random permutation matrix
   P <- reshuffled.class.labels1 * subset.mask
   n1 <- sum(P[, 1])
@@ -356,8 +355,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   
   obs.rnk.matrix <- M1/S1
   gc()
- }
- if (rank.metric == "seq") {
+ } else if (rank.metric == "seq") {
   library(DESeq2)
   coldata <- as.data.frame(colnames(A))
   rownames(coldata) <- coldata[, 1]
