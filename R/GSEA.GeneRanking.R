@@ -31,9 +31,9 @@
 #' fraction: Subsampling fraction. Set to 1.0 (no resampling). For experts only
 #' (default: 1.0) replace: Resampling mode (replacement or not replacement). For
 #' experts only (default: F) reverse.sign: Reverse direction of gene list (default
-#' = F) rank.metric: metric to use for ranking genes, supports "S2N" (signal to 
+#' = F) rank.metric: metric to use for ranking genes, supports 'S2N' (signal to 
 #' noise ratio) which ranks by the difference of means scaled by the standard 
-#' deviation or "ttest" which ranks by the difference of means scaled by the 
+#' deviation or 'ttest' which ranks by the difference of means scaled by the 
 #' standard deviation and number of samples Outputs: rnk.matrix: Matrix with 
 #' random permuted or bootstraps rank metrics signal to noise ratios by default 
 #' (rows are genes, columns are permutations or bootstrap subsamplings 
@@ -47,8 +47,7 @@
 #' @keywords internal
 #'
 
-GSEA.GeneRanking <-
-function(A, class.labels, gene.labels, nperm, permutation.type = 0, 
+GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.type = 0, 
  sigma.correction = "GeneCluster", fraction = 1, replace = F, reverse.sign = F, 
  rank.metric) {
  
@@ -161,7 +160,7 @@ function(A, class.labels, gene.labels, nperm, permutation.type = 0,
  }
  
  if (rank.metric == "S2N") {
- # compute S2N for the random permutation matrix
+  # compute S2N for the random permutation matrix
   P <- reshuffled.class.labels1 * subset.mask
   n1 <- sum(P[, 1])
   M1 <- A %*% P
@@ -255,9 +254,9 @@ function(A, class.labels, gene.labels, nperm, permutation.type = 0,
   
   obs.rnk.matrix <- M1/S1
   gc()
- } 
-if (rank.metric == "ttest") {
- # compute TTest for the random permutation matrix
+ }
+ if (rank.metric == "ttest") {
+  # compute TTest for the random permutation matrix
   P <- reshuffled.class.labels1 * subset.mask
   n1 <- sum(P[, 1])
   M1 <- A %*% P
@@ -357,33 +356,34 @@ if (rank.metric == "ttest") {
   
   obs.rnk.matrix <- M1/S1
   gc()
- } 
-if (rank.metric == "seq"){
-library(DESeq2)
-coldata<-as.data.frame(colnames(A))
-rownames(coldata)<-coldata[,1]
-colnames(coldata)<-"condition"
- # compute S2N for the random permutation matrix
-coldata.rand<-coldata
-rownames(rnk.matrix)<-rownames(A)
-rownames(obs.rnk.matrix)<-rownames(A)
-
-for (d in 1:nperm) {
-coldata.rand[,1]<-reshuffled.class.labels2[,d]
-dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.rand, design = ~ condition)
-dds <- DESeq(dds)
-res <- results(dds)
-rnk.matrix[,d]<-res[,2]
-}
- # compute deseq2 for the observed permutation matrix
-coldata.obs<-coldata
-coldata.obs[,1]<-1-class.labels
-A<-round(A)
-dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~ condition)
-dds <- DESeq(dds)
-res <- results(dds)
-obs.rnk.matrix[,c(1:nperm)]<-res[,2]
-}
+ }
+ if (rank.metric == "seq") {
+  library(DESeq2)
+  coldata <- as.data.frame(colnames(A))
+  rownames(coldata) <- coldata[, 1]
+  colnames(coldata) <- "condition"
+  # compute S2N for the random permutation matrix
+  coldata.rand <- coldata
+  rownames(rnk.matrix) <- rownames(A)
+  rownames(obs.rnk.matrix) <- rownames(A)
+  
+  for (d in 1:nperm) {
+   coldata.rand[, 1] <- reshuffled.class.labels2[, d]
+   dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.rand, 
+    design = ~condition)
+   dds <- DESeq(dds)
+   res <- results(dds)
+   rnk.matrix[, d] <- res[, 2]
+  }
+  # compute deseq2 for the observed permutation matrix
+  coldata.obs <- coldata
+  coldata.obs[, 1] <- 1 - class.labels
+  A <- round(A)
+  dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
+  dds <- DESeq(dds)
+  res <- results(dds)
+  obs.rnk.matrix[, c(1:nperm)] <- res[, 2]
+ }
  
  if (reverse.sign == T) {
   obs.rnk.matrix <- -obs.rnk.matrix
