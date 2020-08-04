@@ -50,9 +50,11 @@
 GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.type = 0, 
  sigma.correction = "GeneCluster", fraction = 1, replace = F, reverse.sign = F, 
  rank.metric) {
- 
+
+if (rank.metric != "seq") {
  A <- A + 1e-08
- 
+}
+
  N <- length(A[, 1])
  Ns <- length(A[1, ])
  
@@ -377,7 +379,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   }
   # compute deseq2 for the observed permutation matrix
   coldata.obs <- coldata
-  coldata.obs[, 1] <- 1 - class.labels
+  coldata.obs[, 1] <- class.labels2
   A <- round(A)
   dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
   dds <- DESeq(dds)
