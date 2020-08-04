@@ -74,11 +74,11 @@ if (file_ext(inputds) != "rnk") {
  use.s2n <- askYesNo("Use default Signal2Noise metric for ranking genes? ")
  if (use.s2n == TRUE & !is.na(use.s2n)) {
   rankmetric <- "S2N"
- } if (use.s2n == FALSE) {
+ } else if (use.s2n == FALSE) {
   use.ttest <- askYesNo("Use T-Test to rank genes? ")
   if (use.ttest == TRUE & !is.na(use.ttest)) {
    rankmetric <- "ttest"
-  } if (use.ttest == FALSE) {
+  } else if (use.ttest == FALSE) {
    use.seq <- askYesNo("Use DESeq2 Log2(FC) to rank genes? ")
    if (use.seq == TRUE & !is.na(use.seq)) {
     rankmetric <- "seq"
