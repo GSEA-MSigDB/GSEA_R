@@ -364,7 +364,7 @@ if (rank.metric != "seq") {
   coldata <- as.data.frame(colnames(A), stringsAsFactors = FALSE)
   rownames(coldata) <- coldata[, 1]
   colnames(coldata) <- "condition"
-  # compute S2N for the random permutation matrix
+  print(paste("Computing the random permutation matrix with DESeq2..."))
   coldata.rand <- coldata
   rownames(rnk.matrix) <- rownames(A)
   rownames(obs.rnk.matrix) <- rownames(A)
@@ -377,9 +377,9 @@ if (rank.metric != "seq") {
    res <- results(dds)
    rnk.matrix[, d] <- res[, 2]
   }
-  # compute deseq2 for the observed permutation matrix
+  print(paste("Computing the real rankings with DESeq2..."))
   coldata.obs <- coldata
-  coldata.obs[, 1] <- class.labels2
+  coldata.obs[, 1] <- 1 - class.labels
   A <- round(A)
   dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
   dds <- DESeq(dds)
