@@ -252,7 +252,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
 
   if (rank.metric == "seq") {
    print(c("Perofrming Low Count Filtering (Preprocessing Dataset for DESeq2)"))
-   dataset2 <- subset(dataset, rowSums(dataset[]) >= 10)
+   dataset <- subset(dataset, rowSums(dataset[]) >= 10)
   }
   
   gene.labels <- row.names(dataset)
@@ -488,11 +488,11 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
     reverse.sign = reverse.sign, rank.metric)
    gc()
    if (length(O$obs.rnk.matrix[is.na(O$obs.rnk.matrix)])>0) {
-    warning(print(length(O$obs.rnk.matrix[is.na(O$obs.rnk.matrix)]))," N/A values were found in the ranked list. Setting N/As to Zero because thse cause GSEA to fail.")
+    warning(print(length(O$obs.rnk.matrix[is.na(O$obs.rnk.matrix)]))," N/A values were found in the ranked list. Setting N/As to Zero because these cause GSEA to fail.")
     O$obs.rnk.matrix[is.na(O$obs.rnk.matrix)]<-0
    }
    if (length(O$rnk.matrix[is.na(O$rnk.matrix)])>0) {
-    warning(print(length(O$rnk.matrix[is.na(O$rnk.matrix)])), " N/A values were found in the ranked list. Setting N/As to Zero because thse cause GSEA to fail.")
+    warning(print(length(O$rnk.matrix[is.na(O$rnk.matrix)])), " N/A values were found in the ranked list. Setting N/As to Zero because these cause GSEA to fail.")
     O$rnk.matrix[is.na(O$rnk.matrix)]<-0
    }
    order.matrix[, n.starts[nk]:n.ends[nk]] <- O$order.matrix
