@@ -303,7 +303,6 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
   }
   names(A) <- sample.names
 	colnames(A) <- sample.names
-	col
  } else if (gsea.type == "preranked") {
   dataset <- read.table(input.ds, sep = "\t", header = FALSE, quote = "", stringsAsFactors = FALSE, 
    fill = TRUE)

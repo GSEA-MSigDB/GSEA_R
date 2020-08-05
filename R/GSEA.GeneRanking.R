@@ -361,7 +361,7 @@ if (rank.metric != "seq") {
  }
  if (rank.metric == "seq") {
   library(DESeq2)
-  coldata <- as.data.frame(colnames(A))
+  coldata <- as.data.frame(colnames(A), stringsAsFactors = FALSE)
   rownames(coldata) <- coldata[, 1]
   colnames(coldata) <- "condition"
   # compute S2N for the random permutation matrix
