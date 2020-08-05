@@ -377,6 +377,16 @@ if (rank.metric != "seq") {
    res <- results(dds)
    rnk.matrix[, d] <- res[, 2]
   }
+
+  if (reverse.sign == T) {
+   rnk.matrix <- -rnk.matrix
+  }
+  gc()
+  
+  for (r in 1:nperm) {
+   order.matrix[, r] <- order(rnk.matrix[, r], decreasing = T)
+  }
+
   print(paste("Computing the real rankings with DESeq2..."))
   coldata.obs <- coldata
   coldata.obs[, 1] <- class.labels2[,1]
