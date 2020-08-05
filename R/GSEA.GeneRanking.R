@@ -379,7 +379,7 @@ if (rank.metric != "seq") {
   }
   print(paste("Computing the real rankings with DESeq2..."))
   coldata.obs <- coldata
-  coldata.obs[, 1] <- 1 - class.labels
+  coldata.obs[, 1] <- class.labels2[,1]
   A <- round(A)
   dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
   dds <- DESeq(dds)
