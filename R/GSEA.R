@@ -532,7 +532,6 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  
  gene.list2 <- obs.index
  for (i in 1:Ng) {
- try{
   print(paste("Computing observed enrichment for gene set:", i, gs.names[i], 
    sep = " "))
   gene.set <- gs[i, gs[i, ] != "null"]
@@ -554,7 +553,6 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
   }
   signal.strength[i] <- tag.frac[i] * (1 - gene.frac[i]) * (N/(N - size.G[i]))
  }
- }
  
  # Compute enrichment for random permutations
  
@@ -565,7 +563,6 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  if (reshuffling.type == "sample.labels") {
   # reshuffling phenotype labels
   for (i in 1:Ng) {
-   try {
    print(paste("Computing random permutations' enrichment for gene set:", 
     i, gs.names[i], sep = " "))
    gene.set <- gs[i, gs[i, ] != "null"]
@@ -618,13 +615,11 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
     }
    }
    gc()
-   }
   }
   
  } else if (reshuffling.type == "gene.labels") {
   # reshuffling gene labels
   for (i in 1:Ng) {
-   try{
    print(paste("Computing random permutations' enrichment for gene set:", 
     i, gs.names[i], sep = " "))
    gene.set <- gs[i, gs[i, ] != "null"]
@@ -677,7 +672,6 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
     }
    }
    gc()
-   }
   }
  }
  
