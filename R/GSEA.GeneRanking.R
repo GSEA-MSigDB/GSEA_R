@@ -370,7 +370,7 @@ if (rank.metric != "seq") {
   rownames(obs.rnk.matrix) <- rownames(A)
   
   for (d in 1:nperm) {
-   coldata.rand[, 1] <- reshuffled.class.labels2[, d]
+   coldata.rand[, 1] <- reshuffled.class.labels1[, d]
    dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.rand, 
     design = ~condition)
    dds <- DESeq(dds)
@@ -389,7 +389,7 @@ if (rank.metric != "seq") {
 
   print(paste("Computing the real rankings with DESeq2..."))
   coldata.obs <- coldata
-  coldata.obs[, 1] <- class.labels2[,1]
+  coldata.obs[, 1] <- class.labels1[,1]
   A <- round(A)
   dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
   dds <- DESeq(dds)
