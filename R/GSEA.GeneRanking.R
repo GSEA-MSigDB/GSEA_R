@@ -375,7 +375,10 @@ if (rank.metric != "seq") {
     design = ~condition)
    dds <- DESeq(dds)
    res <- results(dds)
-   rnk.matrix[, d] <- res[, 2]
+   rnk.matrix[, d] <- res[, 2] #rank by Log2(FC)
+  # rnk.matrix[, c(1:nperm)] <- res[, 2]*-log10(res[, 5]) #rank by Log2(FC)*-log10(pValue)
+  # rnk.matrix[, c(1:nperm)] <- sign(res[, 2])*-log10(res[, 5]) #rank by the -log10(pValue) signed by the Log2(FC)
+
   }
 
   if (reverse.sign == T) {
@@ -394,7 +397,10 @@ if (rank.metric != "seq") {
   dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
   dds <- DESeq(dds)
   res <- results(dds)
-  obs.rnk.matrix[, c(1:nperm)] <- res[, 2]
+  obs.rnk.matrix[, c(1:nperm)] <- res[, 2] #rank by Log2(FC)
+  # obs.rnk.matrix[, c(1:nperm)] <- res[, 2]*-log10(res[, 5]) #rank by Log2(FC)*-log10(pValue)
+  # obs.rnk.matrix[, c(1:nperm)] <- sign(res[, 2])*-log10(res[, 5]) #rank by the -log10(pValue) signed by the Log2(FC)
+
  }
  
  if (reverse.sign == T) {
