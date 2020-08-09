@@ -250,7 +250,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
    dataset <- collapseddataset
   }
 
-  if (rank.metric == "seq") {
+  if (rank.metric == "change"|rank.metric == "signedsig"|rank.metric == "scaledchange") {
    print(c("Perofrming Low Count Filtering (Preprocessing Dataset for DESeq2)"))
    dataset <- subset(dataset, rowSums(dataset[]) >= 10)
 	 dataset<-round(dataset)
@@ -566,8 +566,8 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  if (reshuffling.type == "sample.labels") {
   # reshuffling phenotype labels
   for (i in 1:Ng) {
-   print(paste("Computing random permutations' enrichment for gene set:", 
-    i, gs.names[i], sep = " "))
+   print(paste0("Computing random permutations' enrichment for gene set ", 
+    i, " of ", Ng, ": ", gs.names[i]))
    gene.set <- gs[i, gs[i, ] != "null"]
    gene.set2 <- vector(length = length(gene.set), mode = "numeric")
    gene.set2 <- match(gene.set, gene.labels)
@@ -623,8 +623,8 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  } else if (reshuffling.type == "gene.labels") {
   # reshuffling gene labels
   for (i in 1:Ng) {
-   print(paste("Computing random permutations' enrichment for gene set:", 
-    i, gs.names[i], sep = " "))
+   print(paste0("Computing random permutations' enrichment for gene set ", 
+    i, " of ", Ng, ": ", gs.names[i]))
    gene.set <- gs[i, gs[i, ] != "null"]
    gene.set2 <- vector(length = length(gene.set), mode = "numeric")
    gene.set2 <- match(gene.set, gene.labels)
@@ -1039,9 +1039,19 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
     main = "Gene List Correlation (T-Test) Profile", type = "l", lwd = 2, 
     cex = 0.9, col = 1)
   }
-  if (rank.metric == "seq") {
+  if (rank.metric == "change") {
    x <- plot(location, obs.rnk, ylab = "DESeq2 Log2(FC)", xlab = "Gene List Location", 
     main = "Gene List Correlation (Log2(FC)) Profile", type = "l", lwd = 2, 
+    cex = 0.9, col = 1)
+  }
+  if (rank.metric == "scaledchange") {
+   x <- plot(location, obs.rnk, ylab = "DESeq2 Log2(FC)", xlab = "Gene List Location", 
+    main = "Gene List Correlation (P-Scaled Log2(FC)) Profile", type = "l", lwd = 2, 
+    cex = 0.9, col = 1)
+  }
+  if (rank.metric == "signedsig") {  
+   x <- plot(location, obs.rnk, ylab = "DESeq2 Directional -log10(pValue)", xlab = "Gene List Location", 
+    main = "Gene List Correlation (Directional -log10(pValue)) Profile", type = "l", lwd = 2, 
     cex = 0.9, col = 1)
   }
  } else if (gsea.type == "preranked") {
@@ -1304,16 +1314,24 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
        "S2N", "RES", "CORE_ENRICHMENT")
       }
       if (rank.metric == "ttest") {
-     names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
-       "TTest", "RES", "CORE_ENRICHMENT")
+       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+        "TTest", "RES", "CORE_ENRICHMENT")
       }
-      if (rank.metric == "seq") {
-     names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
-       "DESeq2 Log2(FC)", "RES", "CORE_ENRICHMENT")
+      if (rank.metric == "change") {
+       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+        "DESeq2 Log2(FC)", "RES", "CORE_ENRICHMENT")
+      }
+      if (rank.metric == "scaledchange") {
+       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+        "DESeq2 P-Scaled Log2(FC)", "RES", "CORE_ENRICHMENT")
+      }
+      if (rank.metric == "signedsig") {
+       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+        "DESeq2 Directional -log10(pValue)", "RES", "CORE_ENRICHMENT")
       }
     } else if (gsea.type == "preranked") {
-      names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
-     "RNK", "RES", "CORE_ENRICHMENT")
+       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+       "RNK", "RES", "CORE_ENRICHMENT")
     }
     
     # print(gene.report)

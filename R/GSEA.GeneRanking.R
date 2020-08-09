@@ -51,7 +51,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
  sigma.correction = "GeneCluster", fraction = 1, replace = F, reverse.sign = F, 
  rank.metric) {
 
-if (rank.metric != "seq") {
+if (rank.metric == "S2N"|rank.metric == "ttest") {
  A <- A + 1e-08
 }
 
@@ -359,7 +359,7 @@ if (rank.metric != "seq") {
   obs.rnk.matrix <- M1/S1
   gc()
  }
- if (rank.metric == "seq") {
+ if (rank.metric == "change"|rank.metric == "signedsig"|rank.metric == "scaledchange") {
   library(DESeq2)
   coldata <- as.data.frame(colnames(A), stringsAsFactors = FALSE)
   rownames(coldata) <- coldata[, 1]
@@ -375,10 +375,15 @@ if (rank.metric != "seq") {
     design = ~condition)
    dds <- DESeq(dds)
    res <- results(dds)
-   rnk.matrix[, d] <- res[, 2] #rank by Log2(FC)
-  # rnk.matrix[, c(1:nperm)] <- res[, 2]*-log10(res[, 5]) #rank by Log2(FC)*-log10(pValue)
-  # rnk.matrix[, c(1:nperm)] <- sign(res[, 2])*-log10(res[, 5]) #rank by the -log10(pValue) signed by the Log2(FC)
-
+   if (rank.metric == "change") {
+    rnk.matrix[, d] <- res[, 2] #rank by Log2(FC)
+   }
+   if (rank.metric == "scaledchange") {
+    rnk.matrix[, c(1:nperm)] <- res[, 2]*-log10(res[, 5]) #rank by Log2(FC)*-log10(pValue)
+   } 
+   if (rank.metric == "signedsig") {
+    rnk.matrix[, c(1:nperm)] <- sign(res[, 2])*-log10(res[, 5]) #rank by the -log10(pValue) signed by the Log2(FC)
+   }
   }
 
   if (reverse.sign == T) {
@@ -397,9 +402,15 @@ if (rank.metric != "seq") {
   dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
   dds <- DESeq(dds)
   res <- results(dds)
-  obs.rnk.matrix[, c(1:nperm)] <- res[, 2] #rank by Log2(FC)
-  # obs.rnk.matrix[, c(1:nperm)] <- res[, 2]*-log10(res[, 5]) #rank by Log2(FC)*-log10(pValue)
-  # obs.rnk.matrix[, c(1:nperm)] <- sign(res[, 2])*-log10(res[, 5]) #rank by the -log10(pValue) signed by the Log2(FC)
+   if (rank.metric == "change") {
+    obs.rnk.matrix[, d] <- res[, 2] #rank by Log2(FC)
+   }
+   if (rank.metric == "scaledchange") {
+    obs.rnk.matrix[, c(1:nperm)] <- res[, 2]*-log10(res[, 5]) #rank by Log2(FC)*-log10(pValue)
+   } 
+   if (rank.metric == "signedsig") {
+    obs.rnk.matrix[, c(1:nperm)] <- sign(res[, 2])*-log10(res[, 5]) #rank by the -log10(pValue) signed by the Log2(FC)
+   }
 
  }
  
