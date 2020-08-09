@@ -398,7 +398,6 @@ if (rank.metric == "S2N"|rank.metric == "ttest") {
   print(paste("Computing the real rankings with DESeq2..."))
   coldata.obs <- coldata
   coldata.obs[, 1] <- class.labels1[,1]
-  A <- round(A)
   dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
   dds <- DESeq(dds)
   res <- results(dds)
