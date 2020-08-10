@@ -251,7 +251,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
   }
 
   if (rank.metric == "change"|rank.metric == "signedsig"|rank.metric == "scaledchange") {
-   print(c("Perofrming Low Count Filtering (Preprocessing Dataset for DESeq2)"))
+   print(c("Performing Low Count Filtering (Preprocessing Dataset for DESeq2)"))
    dataset <- subset(dataset, rowSums(dataset[]) >= 10)
 	 dataset<-round(dataset)
   }
