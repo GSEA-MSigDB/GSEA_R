@@ -8,11 +8,11 @@ Additionally, a rudimentary Collapse dataset function has been backported from t
 
 GSEA-R v1.2 contains a preliminary implementation of GSEA-preranked. This implementation has not been thoroughly tested and is reliant on undocumented gene set permutation code.
 
-GSEA-R v1.3 contains experimental methods for eprforming GSEA on an RNA-seq raw counts matrix, and constructing the null distribution of random dataset permutations using DESeq2. 
-Three options are available for ranking genes using DESeq2 metrics: 
-Log2(FC) (rank.metric == change)
--log10(pValue)\*Sign of the Log2(FC) (rank.metric == signedsig)
-Log2(FC)\*-log10(pValue) (rank.metric == scaledchange)
+GSEA-R v1.3 contains experimental methods for eprforming GSEA on an RNA-seq raw counts matrix, and constructing the null distribution of random dataset permutations using DESeq2. <br>
+Three options are available for ranking genes using DESeq2 metrics: <br>
+Log2(FC) (rank.metric == change)<br>
+-log10(pValue)\*Sign of the Log2(FC) (rank.metric == signedsig)<br>
+Log2(FC)\*-log10(pValue) (rank.metric == scaledchange)<br>
 <b>Warning: These methods are extremely slow.</b>
 
 The collapse dataset feature requires the <tt>dplyr</tt> package from <tt>tidyverse</tt>
