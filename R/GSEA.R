@@ -520,8 +520,8 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
   obs.gene.labels <- gene.labels[obs.index]
   obs.gene.descs <- obs.gene.labels
   obs.gene.symbols <- obs.gene.labels
-  obs.order.matrix[, 1:1000] <- gene.list2
-  obs.correl.matrix[, 1:1000] <- obs.rnk
+  obs.order.matrix[, 1:nperm] <- gene.list2
+  obs.correl.matrix[, 1:nperm] <- obs.rnk
  }
  
  gene.list2 <- obs.index
