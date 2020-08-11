@@ -386,6 +386,11 @@ if (rank.metric == "S2N"|rank.metric == "ttest") {
    }
   }
 
+   if (length(rnk.matrix[is.na(rnk.matrix)])>0) {
+    warning(print(length(rnk.matrix[is.na(rnk.matrix)])), " N/A values were found in the permuted rank matrix. Setting N/As to Zero because these cause GSEA to fail.")
+    rnk.matrix[is.na(rnk.matrix)]<-0
+   }
+
   if (reverse.sign == T) {
    rnk.matrix <- -rnk.matrix
   }
@@ -409,6 +414,11 @@ if (rank.metric == "S2N"|rank.metric == "ttest") {
    } 
    if (rank.metric == "signedsig") {
     obs.rnk.matrix[, c(1:nperm)] <- sign(res[, 2])*-log10(res[, 5]) #rank by the -log10(pValue) signed by the Log2(FC)
+   }
+
+   if (length(obs.rnk.matrix[is.na(obs.rnk.matrix)])>0) {
+    warning(print(length(obs.rnk.matrix[is.na(obs.rnk.matrix)]))," N/A values were found in the observed ranked list. Setting N/As to Zero because these cause GSEA to fail.")
+    obs.rnk.matrix[is.na(obs.rnk.matrix)]<-0
    }
 
  }
