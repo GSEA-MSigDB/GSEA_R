@@ -465,7 +465,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  order.matrix <- matrix(nrow = N, ncol = nperm)
  obs.order.matrix <- matrix(nrow = N, ncol = nperm)
  
- nperm.per.call <- 100
+ nperm.per.call <- 10
  n.groups <- nperm%/%nperm.per.call
  n.rem <- nperm%%nperm.per.call
  n.perms <- c(rep(nperm.per.call, n.groups), n.rem)
