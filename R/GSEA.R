@@ -575,7 +575,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
     }
     phi[i, r] <- GSEA.results$ES
    }
-   if (fraction < 1) {
+   if (fraction < 1|rank.metric == "change"|rank.metric == "signedsig"|rank.metric == "scaledchange") {
     # if resampling then compute ES for all observed rankings
     for (r in 1:nperm) {
       obs.gene.list2 <- obs.order.matrix[, r]
@@ -632,7 +632,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
     }
     phi[i, r] <- GSEA.results$ES
    }
-   if (fraction < 1) {
+   if (fraction < 1|rank.metric == "change"|rank.metric == "signedsig"|rank.metric == "scaledchange") {
     # if resampling then compute ES for all observed rankings
     for (r in 1:nperm) {
       obs.gene.list2 <- obs.order.matrix[, r]
