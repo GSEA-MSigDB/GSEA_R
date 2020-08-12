@@ -375,7 +375,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
    message("Computing permutation ", progress + d - 1, " of ", total, "...")
    
    coldata.obs <- coldata
-   coldata.obs[, 1] <- class.labels2[, 1]
+   coldata.obs[, 1] <- class.labels1[, 1]
    coldata.obs$condition <- as.factor(coldata.obs$condition)
    dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
    dds <- DESeq(dds, quiet = TRUE)
@@ -391,7 +391,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
    }
    gc()
    
-   coldata.rand[, 1] <- reshuffled.class.labels2[, d]
+   coldata.rand[, 1] <- reshuffled.class.labels1[, d]
    coldata.rand$condition <- as.factor(coldata.rand$condition)
    dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.rand, 
     design = ~condition)
