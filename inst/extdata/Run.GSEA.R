@@ -154,7 +154,7 @@ GSEA(
  replace               = F,               # For experts only, Resampling mode (replacement or not replacement) (default: F)
  collapse.dataset      = collapsedataset, # Collapse dataset to gene symbols using a user provided chip file (default: F)
  collapse.mode         = collapsemode,
- save.intermediate.results = T,           # For experts only, save intermediate results (e.g. matrix of random perm. scores) (default: F)
+ save.intermediate.results = F,           # For experts only, save intermediate results (e.g. matrix of random perm. scores) (default: F)
  use.fast.enrichment.routine = T,         # Use faster routine to compute enrichment for random permutations (default: T)
  gsea.type = rankmethod,                     # Select Standard GSEA (default) or preranked
  rank.metric = rankmetric
