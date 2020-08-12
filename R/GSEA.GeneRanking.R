@@ -50,11 +50,11 @@
 GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.type = 0, 
  sigma.correction = "GeneCluster", fraction = 1, replace = F, reverse.sign = F, 
  rank.metric) {
-
-if (rank.metric == "S2N"|rank.metric == "ttest") {
- A <- A + 1e-08
-}
-
+ 
+ if (rank.metric == "S2N" | rank.metric == "ttest") {
+  A <- A + 1e-08
+ }
+ 
  N <- length(A[, 1])
  Ns <- length(A[1, ])
  
@@ -359,12 +359,11 @@ if (rank.metric == "S2N"|rank.metric == "ttest") {
   obs.rnk.matrix <- M1/S1
   gc()
  }
- if (rank.metric == "change"|rank.metric == "signedsig"|rank.metric == "scaledchange") {
+ if (rank.metric == "change" | rank.metric == "signedsig" | rank.metric == "scaledchange") {
   library(DESeq2)
   coldata <- as.data.frame(colnames(A), stringsAsFactors = FALSE)
   rownames(coldata) <- coldata[, 1]
   colnames(coldata) <- "condition"
-  print(paste("Computing the random permutation matrix with DESeq2..."))
   coldata.rand <- coldata
   rownames(rnk.matrix) <- rownames(A)
   rownames(obs.rnk.matrix) <- rownames(A)
@@ -376,51 +375,53 @@ if (rank.metric == "S2N"|rank.metric == "ttest") {
    dds <- DESeq(dds)
    res <- results(dds)
    if (rank.metric == "change") {
-    rnk.matrix[, d] <- res[, 2] #rank by Log2(FC)
+    rnk.matrix[, d] <- res[, 2]  #rank by Log2(FC)
    }
    if (rank.metric == "scaledchange") {
-    rnk.matrix[, d] <- res[, 2]*-log10(res[, 5]) #rank by Log2(FC)*-log10(pValue)
-   } 
+    rnk.matrix[, d] <- res[, 2] * -log10(res[, 5])  #rank by Log2(FC)*-log10(pValue)
+   }
    if (rank.metric == "signedsig") {
-    rnk.matrix[, d] <- sign(res[, 2])*-log10(res[, 5]) #rank by the -log10(pValue) signed by the Log2(FC)
+    rnk.matrix[, d] <- sign(res[, 2]) * -log10(res[, 5])  #rank by the -log10(pValue) signed by the Log2(FC)
    }
-  }
-
-   if (length(rnk.matrix[is.na(rnk.matrix)])>0) {
-    warning(print(length(rnk.matrix[is.na(rnk.matrix)])), " N/A values were found in the permuted rank matrix. Setting N/As to Zero because these cause GSEA to fail.")
-    rnk.matrix[is.na(rnk.matrix)]<-0
-   }
-
-  if (reverse.sign == T) {
-   rnk.matrix <- -rnk.matrix
-  }
-  gc()
-  
-  for (r in 1:nperm) {
-   order.matrix[, r] <- order(rnk.matrix[, r], decreasing = T)
-  }
-
-  print(paste("Computing the real rankings with DESeq2..."))
-  coldata.obs <- coldata
-  coldata.obs[, 1] <- class.labels1[,1]
-  dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
-  dds <- DESeq(dds)
-  res <- results(dds)
+   gc()
+   
+   
+   print(paste("Computing the real rankings with DESeq2..."))
+   coldata.obs <- coldata
+   coldata.obs[, 1] <- class.labels1[, 1]
+   dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
+   dds <- DESeq(dds)
+   res <- results(dds)
    if (rank.metric == "change") {
-    obs.rnk.matrix[, c(1:nperm)] <- res[, 2] #rank by Log2(FC)
+    obs.rnk.matrix[, d] <- res[, 2]  #rank by Log2(FC)
    }
    if (rank.metric == "scaledchange") {
-    obs.rnk.matrix[, c(1:nperm)] <- res[, 2]*-log10(res[, 5]) #rank by Log2(FC)*-log10(pValue)
-   } 
+    obs.rnk.matrix[, d] <- res[, 2] * -log10(res[, 5])  #rank by Log2(FC)*-log10(pValue)
+   }
    if (rank.metric == "signedsig") {
-    obs.rnk.matrix[, c(1:nperm)] <- sign(res[, 2])*-log10(res[, 5]) #rank by the -log10(pValue) signed by the Log2(FC)
+    obs.rnk.matrix[, d] <- sign(res[, 2]) * -log10(res[, 5])  #rank by the -log10(pValue) signed by the Log2(FC)
    }
-
-   if (length(obs.rnk.matrix[is.na(obs.rnk.matrix)])>0) {
-    warning(print(length(obs.rnk.matrix[is.na(obs.rnk.matrix)]))," N/A values were found in the observed ranked list. Setting N/As to Zero because these cause GSEA to fail.")
-    obs.rnk.matrix[is.na(obs.rnk.matrix)]<-0
+   
+   gc()
+   
+   if (length(rnk.matrix[is.na(rnk.matrix)]) > 0) {
+    warning(print(length(rnk.matrix[is.na(rnk.matrix)])), " N/A values were found in the permuted rank matrix. Setting N/As to Zero because these cause GSEA to fail.")
+    rnk.matrix[is.na(rnk.matrix)] <- 0
    }
-
+   
+   if (length(obs.rnk.matrix[is.na(obs.rnk.matrix)]) > 0) {
+    warning(print(length(obs.rnk.matrix[is.na(obs.rnk.matrix)])), " N/A values were found in the observed ranked list. Setting N/As to Zero because these cause GSEA to fail.")
+    obs.rnk.matrix[is.na(obs.rnk.matrix)] <- 0
+   }
+  }
+ }
+ 
+ if (reverse.sign == T) {
+  rnk.matrix <- -rnk.matrix
+ }
+ 
+ for (r in 1:nperm) {
+  order.matrix[, r] <- order(rnk.matrix[, r], decreasing = T)
  }
  
  if (reverse.sign == T) {
