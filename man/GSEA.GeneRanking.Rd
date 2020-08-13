@@ -6,7 +6,8 @@
 \usage{
 GSEA.GeneRanking(A, class.labels, gene.labels, nperm,
   permutation.type = 0, sigma.correction = "GeneCluster",
-  fraction = 1, replace = F, reverse.sign = F, rank.metric)
+  fraction = 1, replace = F, reverse.sign = F, rank.metric,
+  progress, total)
 }
 \description{
 `GSEA.GeneRanking` computes the GSEA ranking metric for each gene in the gene list
