@@ -374,23 +374,6 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
    
    message("Computing permutation ", progress + d - 1, " of ", total, "...")
    
-   coldata.obs <- coldata
-   coldata.obs[, 1] <- class.labels1[, 1]
-   coldata.obs$condition <- as.factor(coldata.obs$condition)
-   dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
-   dds <- DESeq(dds, quiet = TRUE)
-   res <- results(dds)
-   if (rank.metric == "change") {
-    obs.rnk.matrix[, d] <- res[, 2]  #rank by Log2(FC)
-   }
-   if (rank.metric == "scaledchange") {
-    obs.rnk.matrix[, d] <- res[, 2] * -log10(res[, 5])  #rank by Log2(FC)*-log10(pValue)
-   }
-   if (rank.metric == "signedsig") {
-    obs.rnk.matrix[, d] <- sign(res[, 2]) * -log10(res[, 5])  #rank by the -log10(pValue) signed by the Log2(FC)
-   }
-   gc()
-   
    coldata.rand[, 1] <- reshuffled.class.labels1[, d]
    coldata.rand$condition <- as.factor(coldata.rand$condition)
    dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.rand, 
@@ -408,15 +391,32 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
    }
    gc()
    
-   if (length(obs.rnk.matrix[is.na(obs.rnk.matrix)]) > 0) {
-    warning(print(length(obs.rnk.matrix[is.na(obs.rnk.matrix)])), " N/A values were found in the observed ranked list. Setting N/As to Zero because these cause GSEA to fail.")
-    obs.rnk.matrix[is.na(obs.rnk.matrix)] <- 0
-   }
-   
    if (length(rnk.matrix[is.na(rnk.matrix)]) > 0) {
     warning(print(length(rnk.matrix[is.na(rnk.matrix)])), " N/A values were found in the permuted rank matrix. Setting N/As to Zero because these cause GSEA to fail.")
     rnk.matrix[is.na(rnk.matrix)] <- 0
    }
+  }
+  
+  coldata.obs <- coldata
+  coldata.obs[, 1] <- class.labels1[, 1]
+  coldata.obs$condition <- as.factor(coldata.obs$condition)
+  dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, design = ~condition)
+  dds <- DESeq(dds, quiet = TRUE)
+  res <- results(dds)
+  if (rank.metric == "change") {
+   obs.rnk.matrix[, d] <- res[, 2]  #rank by Log2(FC)
+  }
+  if (rank.metric == "scaledchange") {
+   obs.rnk.matrix[, 1:nperm] <- res[, 2] * -log10(res[, 5])  #rank by Log2(FC)*-log10(pValue)
+  }
+  if (rank.metric == "signedsig") {
+   obs.rnk.matrix[, 1:nperm] <- sign(res[, 2]) * -log10(res[, 5])  #rank by the -log10(pValue) signed by the Log2(FC)
+  }
+  gc()
+  
+  if (length(obs.rnk.matrix[is.na(obs.rnk.matrix)]) > 0) {
+   warning(print(length(obs.rnk.matrix[is.na(obs.rnk.matrix)])), " N/A values were found in the observed ranked list. Setting N/As to Zero because these cause GSEA to fail.")
+   obs.rnk.matrix[is.na(obs.rnk.matrix)] <- 0
   }
  }
  
