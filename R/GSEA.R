@@ -478,23 +478,52 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
   n.tot <- n.groups + 1
  }
  if (gsea.type == "GSEA") {
+  if (rank.metric == "S2N" | rank.metric == "ttest") {
   for (nk in 1:n.tot) {
    call.nperm <- n.perms[nk]
    
    print(paste("Computing ranked list for actual and permuted phenotypes.......permutations: ", 
     n.starts[nk], "--", n.ends[nk], sep = " "))
-   
    O <- GSEA.GeneRanking(A, class.labels, gene.labels, call.nperm, permutation.type = perm.type, 
     sigma.correction = "GeneCluster", fraction = fraction, replace = replace, 
     reverse.sign = reverse.sign, rank.metric, progress = n.starts[nk], total = nperm)
    gc()
 
    order.matrix[, n.starts[nk]:n.ends[nk]] <- O$order.matrix
-   obs.order.matrix[, n.starts[nk]:n.ends[nk]] <- O$obs.order.matrix
    correl.matrix[, n.starts[nk]:n.ends[nk]] <- O$rnk.matrix
+   obs.order.matrix[, n.starts[nk]:n.ends[nk]] <- O$obs.order.matrix
    obs.correl.matrix[, n.starts[nk]:n.ends[nk]] <- O$obs.rnk.matrix
    rm(O)
+  }}
+  if (rank.metric == "change" | rank.metric == "signedsig" | rank.metric == "scaledchange") {
+  for (nk in 1:n.tot) {
+   call.nperm <- n.perms[nk]
+   
+   print(paste("Computing ranked list for actual and permuted phenotypes.......permutations: ", 
+    n.starts[nk], "--", n.ends[nk], sep = " "))
+     O <- GSEA.SeqRanking(A, class.labels, gene.labels, call.nperm, permutation.type = perm.type, 
+      fraction = fraction, replace = replace, 
+      reverse.sign = reverse.sign, rank.metric, progress = n.starts[nk], total = nperm, stage = "permute")
+   gc()
+
+   order.matrix[, n.starts[nk]:n.ends[nk]] <- O$order.matrix
+   correl.matrix[, n.starts[nk]:n.ends[nk]] <- O$rnk.matrix
+
+   if (fraction < 1) {
+    order.matrix[, n.starts[nk]:n.ends[nk]] <- O$order.matrix
+    correl.matrix[, n.starts[nk]:n.ends[nk]] <- O$rnk.matrix
+   }
+   rm(O)
   }
+   if (fraction == 1) {
+      O <- GSEA.SeqRanking(A, class.labels, gene.labels, call.nperm, permutation.type = perm.type, 
+       fraction = fraction, replace = replace, 
+       reverse.sign = reverse.sign, rank.metric, progress = n.starts[nk], total = nperm, stage = "rank")
+    obs.order.matrix[, 1:nperm] <- O$obs.order.matrix[, 1]
+    obs.correl.matrix[, 1:nperm] <- O$obs.rnk.matrix[, 1]
+   }
+}
+
   obs.rnk <- apply(obs.correl.matrix, 1, median)  # using median to assign enrichment scores
   obs.index <- order(obs.rnk, decreasing = T)
   obs.rnk <- sort(obs.rnk, decreasing = T)
