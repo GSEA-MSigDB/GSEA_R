@@ -233,7 +233,8 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
    gene.map <- dataset[, c(1, 2)]
    dataset <- dataset[, -1]
    dataset <- dataset[, -1]
-   
+   dataset[, c(1:ncol(dataset))] <- sapply(dataset[, c(1:ncol(dataset))],
+	  as.numeric)
   } else if (collapse.dataset == TRUE) {
    chip <- GSEA.ReadCHIPFile(file = input.chip)
    if (is.data.frame(input.ds)) {
