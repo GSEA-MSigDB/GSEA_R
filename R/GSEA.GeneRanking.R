@@ -392,15 +392,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
  for (r in 1:nperm) {
   obs.order.matrix[, r] <- order(obs.rnk.matrix[, r], decreasing = T)
  }
- 
- if (reverse.sign == T) {
-  rnk.matrix <- -rnk.matrix
- }
- for (r in 1:nperm) {
-  order.matrix[, r] <- order(rnk.matrix[, r], decreasing = T)
- }
- 
- 
+  
  return(list(rnk.matrix = rnk.matrix, obs.rnk.matrix = obs.rnk.matrix, order.matrix = order.matrix, 
   obs.order.matrix = obs.order.matrix))
 }
