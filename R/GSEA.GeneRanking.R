@@ -49,7 +49,7 @@
 
 GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.type = 0, 
  sigma.correction = "GeneCluster", fraction = 1, replace = F, reverse.sign = F, 
- rank.metric, progress, total) {
+ rank.metric) {
  
  A <- A + 1e-08
  B <- A
@@ -392,7 +392,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
  for (r in 1:nperm) {
   obs.order.matrix[, r] <- order(obs.rnk.matrix[, r], decreasing = T)
  }
-
-  return(list(rnk.matrix = rnk.matrix, obs.rnk.matrix = obs.rnk.matrix, order.matrix = order.matrix, 
+  
+ return(list(rnk.matrix = rnk.matrix, obs.rnk.matrix = obs.rnk.matrix, order.matrix = order.matrix, 
   obs.order.matrix = obs.order.matrix))
 }
