@@ -70,42 +70,19 @@ if (mindefault == FALSE & !is.na(mindefault)) {
 }
 
 if (file_ext(inputds) != "rnk") {
-
-rankmath <- menu(c("S2N (DEFAULT)", "T-Test", "DESeq2: Log2(FC) (RAW COUNTS ONLY)", "DESeq2: -log10(pValue) signed by the Log2(FC) (RAW COUNTS ONLY)", "DESeq2: Log2(FC)*-log10(pValue) (RAW COUNTS ONLY)"), 
- graphics = FALSE, title = "Collapsing mode for probe sets => 1 gene")
-if (rankmath == 1) {
- rankmetric <- "S2N"
-} else if (rankmath == 2) {
- rankmetric <- "ttest"
-} else if (rankmath == 3) {
- rankmetric <- "change"
-} else if (rankmath == 4) {
- rankmetric <- "signedsig"
-} else if (rankmath == 5) {
- rankmetric <- "scaledchange"
-} else {
- cat("No other ranking metrics implemented. Defaulting to S2N.\n")
- rankmetric <- "S2N"
-}
-
- # cat("\n")
- # use.s2n <- askYesNo("Use default Signal2Noise metric for ranking genes? ")
- # if (use.s2n == TRUE & !is.na(use.s2n)) {
- #  rankmetric <- "S2N"
- # } else if (use.s2n == FALSE) {
- #  use.ttest <- askYesNo("Use T-Test to rank genes? ")
- #  if (use.ttest == TRUE & !is.na(use.ttest)) {
- #   rankmetric <- "ttest"
- #  } else if (use.ttest == FALSE) {
- #   use.seq <- askYesNo("Use DESeq2 to calculate Log2(FC) to rank genes? ")
- #   if (use.seq == TRUE & !is.na(use.seq)) {
- #    rankmetric <- "seq"
- #   }
- #  } else {
- #   cat("No other ranking metrics implemented. Defaulting to S2N.\n")
- #   rankmetric <- "S2N"
- #  }
- # }
+ cat("\n")
+ use.s2n <- askYesNo("Use default Signal2Noise metric for ranking genes? ")
+ if (use.s2n == TRUE & !is.na(use.s2n)) {
+  rankmetric <- "S2N"
+ } else if (use.s2n == FALSE) {
+  use.ttest <- askYesNo("Use T-Test to rank genes? ")
+  if (use.ttest == TRUE & !is.na(use.ttest)) {
+   rankmetric <- "ttest"
+  } else {
+   cat("No other ranking metrics implemented. Defaulting to S2N.\n")
+   rankmetric <- "S2N"
+  }
+ }
 }
 
 cat("\n")
