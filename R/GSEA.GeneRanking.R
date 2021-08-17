@@ -164,6 +164,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
  }
  
  if (rank.metric == "S2N") {
+
   # compute S2N for the random permutation matrix
   P <- reshuffled.class.labels1 * subset.mask
   for (m in 1:nperm) {
@@ -220,9 +221,8 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   for (r in 1:nperm) {
    order.matrix[, r] <- order(rnk.matrix[, r], decreasing = T)
   }
-  
-  # compute S2N for the 'observed' permutation matrix
-  
+
+  # compute S2N for the 'observed' permutation matrix  
   P <- class.labels1 * subset.mask
   for (m in 1:nperm) {
   P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
@@ -272,6 +272,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   gc()
  }
  if (rank.metric == "ttest") {
+
   # compute TTest for the random permutation matrix
   P <- reshuffled.class.labels1 * subset.mask
   for (m in 1:nperm) {
@@ -332,8 +333,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
    order.matrix[, r] <- order(rnk.matrix[, r], decreasing = T)
   }
   
-  # compute TTest for the 'observed' permutation matrix
-  
+  # compute TTest for the 'observed' permutation matrix  
   P <- class.labels1 * subset.mask
   for (m in 1:nperm) {
   P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
@@ -392,15 +392,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
  for (r in 1:nperm) {
   obs.order.matrix[, r] <- order(obs.rnk.matrix[, r], decreasing = T)
  }
- 
- if (reverse.sign == T) {
-  rnk.matrix <- -rnk.matrix
- }
- for (r in 1:nperm) {
-  order.matrix[, r] <- order(rnk.matrix[, r], decreasing = T)
- }
- 
- 
+  
  return(list(rnk.matrix = rnk.matrix, obs.rnk.matrix = obs.rnk.matrix, order.matrix = order.matrix, 
   obs.order.matrix = obs.order.matrix))
 }
