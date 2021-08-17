@@ -1,9 +1,8 @@
 #' Ranks genes according to the specified ranking metric
 #'
-#' `GSEA.GeneRanking` computes the GSEA ranking metric for each gene in the gene list
+#' `GSEA.SeqRanking` computes the GSEA ranking metric for each gene in the gene raw counts matrix using DESeq2
 #'
-#' Compute the GSEA ranking metric for each gene in the gene list. Current implementation
-#' supports ranking genes by Signal2Noise ratio, or by t-test metric.
+#' Compute the GSEA ranking metric for each gene in the gene list. 
 #' This function ranks the genes for the actual phenotype and also random 
 #' permutations and bootstrap subsamples of both the observed and random 
 #' phenotypes. It uses matrix operations to implement the rank calculations 
@@ -31,10 +30,10 @@
 #' fraction: Subsampling fraction. Set to 1.0 (no resampling). For experts only
 #' (default: 1.0) replace: Resampling mode (replacement or not replacement). For
 #' experts only (default: F) reverse.sign: Reverse direction of gene list (default
-#' = F) rank.metric: metric to use for ranking genes, supports 'S2N' (signal to 
-#' noise ratio) which ranks by the difference of means scaled by the standard 
-#' deviation or 'ttest' which ranks by the difference of means scaled by the 
-#' standard deviation and number of samples Outputs: rnk.matrix: Matrix with 
+#' = F) rank.metric: metric to use for ranking genes, supports 'change' which ranks 
+#' by the DESeq2 computed Log2(FC), 'signedsig' which ranks by the  * the Sign of 
+#' the Log2(FC), and 'scaledchange' which ranks by the DESeq2 computed 
+#' Log2(FC)*-log10(DESeq2 pValue), Outputs: rnk.matrix: Matrix with 
 #' random permuted or bootstraps rank metrics signal to noise ratios by default 
 #' (rows are genes, columns are permutations or bootstrap subsamplings 
 #' obs.rnk.matrix: Matrix with observed rank metrics (rows are genes, columns 
@@ -47,14 +46,11 @@
 #' @keywords internal
 #'
 
-GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.type = 0, 
- sigma.correction = "GeneCluster", fraction = 1, replace = F, reverse.sign = F, 
- rank.metric, progress, total) {
+GSEA.SeqRanking <- function(A, class.labels, gene.labels, nperm, permutation.type = 0, 
+ fraction = 1, replace = F, reverse.sign = F, rank.metric, progress, total, stage) {
  
- A <- A + 1e-08
- B <- A
- B[is.na(B)] <- 0
-
+ mode(A) <- "integer"
+ 
  N <- length(A[, 1])
  Ns <- length(A[1, ])
  
@@ -77,9 +73,7 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
  M2 <- matrix(0, nrow = N, ncol = nperm)
  S1 <- matrix(0, nrow = N, ncol = nperm)
  S2 <- matrix(0, nrow = N, ncol = nperm)
- Gn1 <- matrix(0, nrow = N, ncol = nperm)
- Gn2 <- matrix(0, nrow = N, ncol = nperm)
-
+ 
  gc()
  
  C <- split(class.labels, class.labels)
@@ -163,236 +157,119 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   }
  }
  
- if (rank.metric == "S2N") {
-
-  # compute S2N for the random permutation matrix
-  P <- reshuffled.class.labels1 * subset.mask
-  for (m in 1:nperm) {
-  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
-  P2[is.na(A)] <- NA
-  Gn1[,m] <- rowSums(P2, na.rm=TRUE)}
-  M1 <- B %*% P
-  M1 <- M1/Gn1
-  gc()
-  B2 <- B * B
-  S1 <- B2 %*% P
-  S1 <- S1/Gn1 - M1 * M1
-  S1 <- sqrt(abs((Gn1/(Gn1 - 1)) * S1))
-  gc()
-  P <- reshuffled.class.labels2 * subset.mask
-  for (m in 1:nperm) {
-  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
-  P2[is.na(A)] <- NA
-  Gn2[,m] <- rowSums(P2, na.rm=TRUE)}
-  M2 <- B %*% P
-  M2 <- M2/Gn2
-  gc()
-  B2 <- B * B
-  S2 <- B2 %*% P
-  S2 <- S2/Gn2 - M2 * M2
-  S2 <- sqrt(abs((Gn2/(Gn2 - 1)) * S2))
-  rm(P)
-  rm(B2)
-  gc()
+ if (rank.metric == "change" | rank.metric == "signedsig" | rank.metric == "scaledchange") {
+  library(DESeq2)
+  coldata <- as.data.frame(colnames(A), stringsAsFactors = FALSE)
+  rownames(coldata) <- coldata[, 1]
+  colnames(coldata) <- "condition"
+  coldata.rand <- coldata
+  rownames(rnk.matrix) <- rownames(A)
+  rownames(obs.rnk.matrix) <- rownames(A)
   
-  if (sigma.correction == "GeneCluster") {
-   # small sigma 'fix' as used in GeneCluster
-   S2 <- ifelse(0.2 * abs(M2) < S2, S2, 0.2 * abs(M2))
-   S2 <- ifelse(S2 == 0, 0.2, S2)
-   S1 <- ifelse(0.2 * abs(M1) < S1, S1, 0.2 * abs(M1))
-   S1 <- ifelse(S1 == 0, 0.2, S1)
-   gc()
+  if (stage == "permute") {
+   for (d in 1:nperm) {
+    
+    message("Computing permutation ", progress + d - 1, " of ", total, 
+      "...")
+    
+    coldata.rand[, 1] <- reshuffled.class.labels1[, d]
+    coldata.rand$condition <- as.factor(coldata.rand$condition)
+    dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.rand, 
+      design = ~condition)
+    dds <- DESeq(dds)
+    res <- results(dds)
+    if (rank.metric == "change") {
+      rnk.matrix[, d] <- res[, 2]  #rank by Log2(FC)
+    }
+    if (rank.metric == "scaledchange") {
+      rnk.matrix[, d] <- res[, 2] * -log10(res[, 5])  #rank by Log2(FC)*-log10(pValue)
+    }
+    if (rank.metric == "signedsig") {
+      rnk.matrix[, d] <- sign(res[, 2]) * -log10(res[, 5])  #rank by the -log10(pValue) signed by the Log2(FC)
+    }
+    gc()
+    
+    if (length(rnk.matrix[is.na(rnk.matrix)]) > 0) {
+      warning(print(length(rnk.matrix[is.na(rnk.matrix)])), " N/A values were found in the permuted rank matrix. Setting N/As to Zero because these cause GSEA to fail.")
+      rnk.matrix[is.na(rnk.matrix)] <- 0
+    }
+    if (fraction < 1) {
+      
+      coldata.obs <- coldata
+      coldata.obs[, 1] <- class.labels1[, 1]
+      coldata.obs$condition <- as.factor(coldata.obs$condition)
+      dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, 
+     design = ~condition)
+      dds <- DESeq(dds, quiet = TRUE)
+      res <- results(dds)
+      if (rank.metric == "change") {
+     obs.rnk.matrix[, d] <- res[, 2]  #rank by Log2(FC)
+      }
+      if (rank.metric == "scaledchange") {
+     obs.rnk.matrix[, d] <- res[, 2] * -log10(res[, 5])  #rank by Log2(FC)*-log10(pValue)
+      }
+      if (rank.metric == "signedsig") {
+     obs.rnk.matrix[, d] <- sign(res[, 2]) * -log10(res[, 5])  #rank by the -log10(pValue) signed by the Log2(FC)
+      }
+      gc()
+      
+      if (length(obs.rnk.matrix[is.na(obs.rnk.matrix)]) > 0) {
+     warning(print(length(obs.rnk.matrix[is.na(obs.rnk.matrix)])), 
+       " N/A values were found in the observed ranked list. Setting N/As to Zero because these cause GSEA to fail.")
+     obs.rnk.matrix[is.na(obs.rnk.matrix)] <- 0
+      }
+    }
+   }
   }
-  
-  M1 <- M1 - M2
-  rm(M2)
-  gc()
-  S1 <- S1 + S2
-  rm(S2)
-  gc()
-  
-  rnk.matrix <- M1/S1
-  
-  if (reverse.sign == T) {
-   rnk.matrix <- -rnk.matrix
+  if (stage == "rank") {
+   if (fraction == 1) {
+    coldata.obs <- coldata
+    coldata.obs[, 1] <- class.labels1[, 1]
+    coldata.obs$condition <- as.factor(coldata.obs$condition)
+    dds <- DESeqDataSetFromMatrix(countData = A, colData = coldata.obs, 
+      design = ~condition)
+    message("Computing actual gene rankings...")
+    dds <- DESeq(dds)
+    res <- results(dds)
+    if (rank.metric == "change") {
+      obs.rnk.matrix[, 1:nperm] <- res[, 2]  #rank by Log2(FC)
+    }
+    if (rank.metric == "scaledchange") {
+      obs.rnk.matrix[, 1:nperm] <- res[, 2] * -log10(res[, 5])  #rank by Log2(FC)*-log10(pValue)
+    }
+    if (rank.metric == "signedsig") {
+      obs.rnk.matrix[, 1:nperm] <- sign(res[, 2]) * -log10(res[, 5])  #rank by the -log10(pValue) signed by the Log2(FC)
+    }
+    gc()
+    
+    if (length(obs.rnk.matrix[is.na(obs.rnk.matrix)]) > 0) {
+      warning(print(length(obs.rnk.matrix[is.na(obs.rnk.matrix)])), " N/A values were found in the observed ranked list. Setting N/As to Zero because these cause GSEA to fail.")
+      obs.rnk.matrix[is.na(obs.rnk.matrix)] <- 0
+    }
+   }
   }
-  gc()
-  
-  for (r in 1:nperm) {
-   order.matrix[, r] <- order(rnk.matrix[, r], decreasing = T)
-  }
-
-  # compute S2N for the 'observed' permutation matrix  
-  P <- class.labels1 * subset.mask
-  for (m in 1:nperm) {
-  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
-  P2[is.na(A)] <- NA
-  Gn1[,m] <- rowSums(P2, na.rm=TRUE)}
-  M1 <- B %*% P
-  M1 <- M1/Gn1
-  gc()
-  B2 <- B * B
-  S1 <- B2 %*% P
-  S1 <- S1/Gn1 - M1 * M1
-  S1 <- sqrt(abs((Gn1/(Gn1 - 1)) * S1))
-  gc()
-  P <- class.labels2 * subset.mask
-  for (m in 1:nperm) {
-  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
-  P2[is.na(A)] <- NA
-  Gn2[,m] <- rowSums(P2, na.rm=TRUE)}
-  M2 <- B %*% P
-  M2 <- M2/Gn2
-  gc()
-  B2 <- B * B
-  S2 <- B2 %*% P
-  S2 <- S2/Gn2 - M2 * M2
-  S2 <- sqrt(abs((Gn2/(Gn2 - 1)) * S2))
-  rm(P)
-  rm(B2)
-  gc()
-  
-  if (sigma.correction == "GeneCluster") {
-   # small sigma 'fix' as used in GeneCluster
-   S2 <- ifelse(0.2 * abs(M2) < S2, S2, 0.2 * abs(M2))
-   S2 <- ifelse(S2 == 0, 0.2, S2)
-   S1 <- ifelse(0.2 * abs(M1) < S1, S1, 0.2 * abs(M1))
-   S1 <- ifelse(S1 == 0, 0.2, S1)
-   gc()
-  }
-  
-  M1 <- M1 - M2
-  rm(M2)
-  gc()
-  S1 <- S1 + S2
-  rm(S2)
-  gc()
-  
-  obs.rnk.matrix <- M1/S1
-  gc()
  }
- if (rank.metric == "ttest") {
-
-  # compute TTest for the random permutation matrix
-  P <- reshuffled.class.labels1 * subset.mask
-  for (m in 1:nperm) {
-  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
-  P2[is.na(A)] <- NA
-  Gn1[,m] <- rowSums(P2, na.rm=TRUE)}
-  M1 <- B %*% P
-  M1 <- M1/Gn1
-  gc()
-  B2 <- B * B
-  S1 <- B2 %*% P
-  S1 <- S1/Gn1 - M1 * M1
-  S1 <- sqrt(abs((Gn1/(Gn1 - 1)) * S1))
-  gc()
-  P <- reshuffled.class.labels2 * subset.mask
-  for (m in 1:nperm) {
-  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
-  P2[is.na(A)] <- NA
-  Gn2[,m] <- rowSums(P2, na.rm=TRUE)}
-  M2 <- B %*% P
-  M2 <- M2/Gn2
-  gc()
-  B2 <- B * B
-  S2 <- B2 %*% P
-  S2 <- S2/Gn2 - M2 * M2
-  S2 <- sqrt(abs((Gn2/(Gn2 - 1)) * S2))
-  rm(P)
-  rm(B2)
-  gc()
-  
-  if (sigma.correction == "GeneCluster") {
-   # small sigma 'fix' as used in GeneCluster
-   S2 <- ifelse(0.2 * abs(M2) < S2, S2, 0.2 * abs(M2))
-   S2 <- ifelse(S2 == 0, 0.2, S2)
-   S1 <- ifelse(0.2 * abs(M1) < S1, S1, 0.2 * abs(M1))
-   S1 <- ifelse(S1 == 0, 0.2, S1)
-   gc()
-  }
-  
-  M1 <- M1 - M2
-  rm(M2)
-  gc()
-  S1 <- (S1^2)/Gn1
-  S2 <- (S2^2)/Gn2
-  S1 <- S1 + S2
-  S1 <- sqrt(S1)
-  rm(S2)
-  gc()
-  
-  rnk.matrix <- M1/S1
-  
-  if (reverse.sign == T) {
-   rnk.matrix <- -rnk.matrix
-  }
-  gc()
-  
-  for (r in 1:nperm) {
-   order.matrix[, r] <- order(rnk.matrix[, r], decreasing = T)
-  }
-  
-  # compute TTest for the 'observed' permutation matrix  
-  P <- class.labels1 * subset.mask
-  for (m in 1:nperm) {
-  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
-  P2[is.na(A)] <- NA
-  Gn1[,m] <- rowSums(P2, na.rm=TRUE)}
-  M1 <- B %*% P
-  M1 <- M1/Gn1
-  gc()
-  B2 <- B * B
-  S1 <- B2 %*% P
-  S1 <- S1/Gn1 - M1 * M1
-  S1 <- sqrt(abs((Gn1/(Gn1 - 1)) * S1))
-  gc()
-  P <- class.labels2 * subset.mask
-  for (m in 1:nperm) {
-  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
-  P2[is.na(A)] <- NA
-  Gn2[,m] <- rowSums(P2, na.rm=TRUE)}
-  M2 <- B %*% P
-  M2 <- M2/Gn2
-  gc()
-  B2 <- B * B
-  S2 <- B2 %*% P
-  S2 <- S2/Gn2 - M2 * M2
-  S2 <- sqrt(abs((Gn2/(Gn2 - 1)) * S2))
-  rm(P)
-  rm(B2)
-  gc()
-  
-  if (sigma.correction == "GeneCluster") {
-   # small sigma 'fix' as used in GeneCluster
-   S2 <- ifelse(0.2 * abs(M2) < S2, S2, 0.2 * abs(M2))
-   S2 <- ifelse(S2 == 0, 0.2, S2)
-   S1 <- ifelse(0.2 * abs(M1) < S1, S1, 0.2 * abs(M1))
-   S1 <- ifelse(S1 == 0, 0.2, S1)
-   gc()
-  }
-  
-  M1 <- M1 - M2
-  rm(M2)
-  gc()
-  S1 <- (S1^2)/Gn1
-  S2 <- (S2^2)/Gn2
-  S1 <- S1 + S2
-  S1 <- sqrt(S1)
-  rm(S2)
-  gc()
-  
-  obs.rnk.matrix <- M1/S1
-  gc()
- }
+ 
  
  if (reverse.sign == T) {
   obs.rnk.matrix <- -obs.rnk.matrix
  }
- for (r in 1:nperm) {
-  obs.order.matrix[, r] <- order(obs.rnk.matrix[, r], decreasing = T)
+ 
+ if (fraction < 1) {
+  for (r in 1:nperm) {
+   obs.order.matrix[, r] <- order(obs.rnk.matrix[, r], decreasing = T)
+  }
+ } else if (fraction == 1) {
+  obs.order.matrix[, 1:nperm] <- order(obs.rnk.matrix[, 1], decreasing = T)
  }
-
-  return(list(rnk.matrix = rnk.matrix, obs.rnk.matrix = obs.rnk.matrix, order.matrix = order.matrix, 
+ 
+ if (reverse.sign == T) {
+  rnk.matrix <- -rnk.matrix
+ }
+ for (r in 1:nperm) {
+  order.matrix[, r] <- order(rnk.matrix[, r], decreasing = T)
+ }
+ 
+ return(list(rnk.matrix = rnk.matrix, obs.rnk.matrix = obs.rnk.matrix, order.matrix = order.matrix, 
   obs.order.matrix = obs.order.matrix))
 }
