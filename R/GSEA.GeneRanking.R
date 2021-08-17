@@ -49,7 +49,7 @@
 
 GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.type = 0, 
  sigma.correction = "GeneCluster", fraction = 1, replace = F, reverse.sign = F, 
- rank.metric, progress, total) {
+ rank.metric) {
  
  A <- A + 1e-08
  B <- A
