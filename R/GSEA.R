@@ -224,6 +224,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
     dataset <- GSEA.Gct2Frame(filename = input.ds)
    }
    colnames(dataset)[1] <- "NAME"
+   colnames(dataset)[2] <- "Description"
    dataset <- dataset[match(unique(dataset$NAME), dataset$NAME), ]
    dataset.ann <- dataset[, c("NAME", "Description")]
    colnames(dataset.ann)[1] <- "Gene.Symbol"
@@ -248,6 +249,12 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
    collapseddataset <- collapseddataset[, -1]
    collapseddataset <- collapseddataset[, -1]
    dataset <- collapseddataset
+  }
+
+  if (rank.metric == "change"|rank.metric == "signedsig"|rank.metric == "scaledchange") {
+   print(c("Performing Low Count Filtering (Preprocessing Dataset for DESeq2)"))
+   dataset <- subset(dataset, rowSums(dataset[]) >= 10)
+	 dataset<-round(dataset)
   }
   
   gene.labels <- row.names(dataset)
@@ -302,6 +309,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
    A[j, ] <- A[j, col.index]
   }
   names(A) <- sample.names
+	colnames(A) <- sample.names
  } else if (gsea.type == "preranked") {
   dataset <- read.table(input.ds, sep = "\t", header = FALSE, quote = "", stringsAsFactors = FALSE, 
    fill = TRUE)
@@ -387,6 +395,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  
  if (exists("chip") == TRUE) {
   gene.ann <- unique(chip[, c("Gene.Symbol", "Gene.Title")])
+  print(c("Replacing gene descriptions from input dataset with annotations from mapping CHIP."))
  }
  if (exists("chip") == FALSE) {
   gene.ann <- dataset.ann
@@ -470,23 +479,52 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
   n.tot <- n.groups + 1
  }
  if (gsea.type == "GSEA") {
+  if (rank.metric == "S2N" | rank.metric == "ttest") {
   for (nk in 1:n.tot) {
    call.nperm <- n.perms[nk]
    
    print(paste("Computing ranked list for actual and permuted phenotypes.......permutations: ", 
     n.starts[nk], "--", n.ends[nk], sep = " "))
-   
    O <- GSEA.GeneRanking(A, class.labels, gene.labels, call.nperm, permutation.type = perm.type, 
     sigma.correction = "GeneCluster", fraction = fraction, replace = replace, 
-    reverse.sign = reverse.sign, rank.metric)
+    reverse.sign = reverse.sign, rank.metric, progress = n.starts[nk], total = nperm)
    gc()
-   
+
    order.matrix[, n.starts[nk]:n.ends[nk]] <- O$order.matrix
-   obs.order.matrix[, n.starts[nk]:n.ends[nk]] <- O$obs.order.matrix
    correl.matrix[, n.starts[nk]:n.ends[nk]] <- O$rnk.matrix
+   obs.order.matrix[, n.starts[nk]:n.ends[nk]] <- O$obs.order.matrix
    obs.correl.matrix[, n.starts[nk]:n.ends[nk]] <- O$obs.rnk.matrix
    rm(O)
+  }}
+  if (rank.metric == "change" | rank.metric == "signedsig" | rank.metric == "scaledchange") {
+  for (nk in 1:n.tot) {
+   call.nperm <- n.perms[nk]
+   
+   print(paste("Computing ranked list for actual and permuted phenotypes.......permutations: ", 
+    n.starts[nk], "--", n.ends[nk], sep = " "))
+     O <- GSEA.SeqRanking(A, class.labels, gene.labels, call.nperm, permutation.type = perm.type, 
+      fraction = fraction, replace = replace, 
+      reverse.sign = reverse.sign, rank.metric, progress = n.starts[nk], total = nperm, stage = "permute")
+   gc()
+
+   order.matrix[, n.starts[nk]:n.ends[nk]] <- O$order.matrix
+   correl.matrix[, n.starts[nk]:n.ends[nk]] <- O$rnk.matrix
+
+   if (fraction < 1) {
+    order.matrix[, n.starts[nk]:n.ends[nk]] <- O$order.matrix
+    correl.matrix[, n.starts[nk]:n.ends[nk]] <- O$rnk.matrix
+   }
+   rm(O)
   }
+   if (fraction == 1) {
+      O <- GSEA.SeqRanking(A, class.labels, gene.labels, call.nperm, permutation.type = perm.type, 
+       fraction = fraction, replace = replace, 
+       reverse.sign = reverse.sign, rank.metric, progress = n.starts[nk], total = nperm, stage = "rank")
+    obs.order.matrix[, 1:nperm] <- O$obs.order.matrix[, 1]
+    obs.correl.matrix[, 1:nperm] <- O$obs.rnk.matrix[, 1]
+   }
+}
+
   obs.rnk <- apply(obs.correl.matrix, 1, median)  # using median to assign enrichment scores
   obs.index <- order(obs.rnk, decreasing = T)
   obs.rnk <- sort(obs.rnk, decreasing = T)
@@ -549,8 +587,8 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  if (reshuffling.type == "sample.labels") {
   # reshuffling phenotype labels
   for (i in 1:Ng) {
-   print(paste("Computing random permutations' enrichment for gene set:", 
-    i, gs.names[i], sep = " "))
+   print(paste0("Computing random permutations' enrichment for gene set ", 
+    i, " of ", Ng, ": ", gs.names[i]))
    gene.set <- gs[i, gs[i, ] != "null"]
    gene.set2 <- vector(length = length(gene.set), mode = "numeric")
    gene.set2 <- match(gene.set, gene.labels)
@@ -606,8 +644,8 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  } else if (reshuffling.type == "gene.labels") {
   # reshuffling gene labels
   for (i in 1:Ng) {
-   print(paste("Computing random permutations' enrichment for gene set:", 
-    i, gs.names[i], sep = " "))
+   print(paste0("Computing random permutations' enrichment for gene set ", 
+    i, " of ", Ng, ": ", gs.names[i]))
    gene.set <- gs[i, gs[i, ] != "null"]
    gene.set2 <- vector(length = length(gene.set), mode = "numeric")
    gene.set2 <- match(gene.set, gene.labels)
@@ -961,7 +999,7 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
  
  report <- data.frame(cbind(gs.names, size.G, all.gs.descs, Obs.ES, Obs.ES.norm, 
   p.vals[, 1], FDR.mean.sorted, p.vals[, 2], tag.frac, gene.frac, signal.strength, 
-  FDR.median.sorted, glob.p.vals.sorted))
+  FDR.median.sorted, glob.p.vals.sorted), stringsAsFactors = FALSE)
  names(report) <- c("GS", "SIZE", "SOURCE", "ES", "NES", "NOM p-val", "FDR q-val", 
   "FWER p-val", "Tag %", "Gene %", "Signal", "FDR (median)", "glob.p.val")
  # print(report)
@@ -1020,6 +1058,21 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
   if (rank.metric == "ttest") {
    x <- plot(location, obs.rnk, ylab = "T-Test", xlab = "Gene List Location", 
     main = "Gene List Correlation (T-Test) Profile", type = "l", lwd = 2, 
+    cex = 0.9, col = 1)
+  }
+  if (rank.metric == "change") {
+   x <- plot(location, obs.rnk, ylab = "DESeq2 Log2(FC)", xlab = "Gene List Location", 
+    main = "Gene List Correlation (Log2(FC)) Profile", type = "l", lwd = 2, 
+    cex = 0.9, col = 1)
+  }
+  if (rank.metric == "scaledchange") {
+   x <- plot(location, obs.rnk, ylab = "DESeq2 Log2(FC)", xlab = "Gene List Location", 
+    main = "Gene List Correlation (P-Scaled Log2(FC)) Profile", type = "l", lwd = 2, 
+    cex = 0.9, col = 1)
+  }
+  if (rank.metric == "signedsig") {  
+   x <- plot(location, obs.rnk, ylab = "DESeq2 Directional -log10(pValue)", xlab = "Gene List Location", 
+    main = "Gene List Correlation (Directional -log10(pValue)) Profile", type = "l", lwd = 2, 
     cex = 0.9, col = 1)
   }
  } else if (gsea.type == "preranked") {
@@ -1282,12 +1335,24 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
        "S2N", "RES", "CORE_ENRICHMENT")
       }
       if (rank.metric == "ttest") {
-     names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
-       "TTest", "RES", "CORE_ENRICHMENT")
+       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+        "TTest", "RES", "CORE_ENRICHMENT")
+      }
+      if (rank.metric == "change") {
+       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+        "DESeq2 Log2(FC)", "RES", "CORE_ENRICHMENT")
+      }
+      if (rank.metric == "scaledchange") {
+       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+        "DESeq2 P-Scaled Log2(FC)", "RES", "CORE_ENRICHMENT")
+      }
+      if (rank.metric == "signedsig") {
+       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+        "DESeq2 Directional -log10(pValue)", "RES", "CORE_ENRICHMENT")
       }
     } else if (gsea.type == "preranked") {
-      names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
-     "RNK", "RES", "CORE_ENRICHMENT")
+       names(gene.report) <- c("#", "GENE SYMBOL", "DESC", "LIST LOC", 
+       "RNK", "RES", "CORE_ENRICHMENT")
     }
     
     # print(gene.report)
