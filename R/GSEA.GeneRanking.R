@@ -170,19 +170,12 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
   P2[is.na(A)] <- NA
   Gn1[,m] <- rowSums(P2, na.rm=TRUE)}
-#  n1 <- sum(P[, 1])
-#  M1 <- A %*% P
   M1 <- B %*% P
-#  M1 <- M1/n1
   M1 <- M1/Gn1
   gc()
-#  A2 <- A * A
   B2 <- B * B
-#  S1 <- A2 %*% P
   S1 <- B2 %*% P
-#  S1 <- S1/n1 - M1 * M1
   S1 <- S1/Gn1 - M1 * M1
-#  S1 <- sqrt(abs((n1/(n1 - 1)) * S1))
   S1 <- sqrt(abs((Gn1/(Gn1 - 1)) * S1))
   gc()
   P <- reshuffled.class.labels2 * subset.mask
@@ -190,22 +183,14 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
   P2[is.na(A)] <- NA
   Gn2[,m] <- rowSums(P2, na.rm=TRUE)}
-#  n2 <- sum(P[, 1])
-#  M2 <- A %*% P
   M2 <- B %*% P
-#  M2 <- M2/n2
   M2 <- M2/Gn2
   gc()
-#  A2 <- A * A
   B2 <- B * B
-#  S2 <- A2 %*% P
   S2 <- B2 %*% P
-#  S2 <- S2/n2 - M2 * M2
   S2 <- S2/Gn2 - M2 * M2
-#  S2 <- sqrt(abs((n2/(n2 - 1)) * S2))
   S2 <- sqrt(abs((Gn2/(Gn2 - 1)) * S2))
   rm(P)
-#  rm(A2)
   rm(B2)
   gc()
   
@@ -243,19 +228,12 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
   P2[is.na(A)] <- NA
   Gn1[,m] <- rowSums(P2, na.rm=TRUE)}
-#  n1 <- sum(P[, 1])
-#  M1 <- A %*% P
   M1 <- B %*% P
-#  M1 <- M1/n1
   M1 <- M1/Gn1
   gc()
-#  A2 <- A * A
   B2 <- B * B
-#  S1 <- A2 %*% P
   S1 <- B2 %*% P
-#  S1 <- S1/n1 - M1 * M1
   S1 <- S1/Gn1 - M1 * M1
-#  S1 <- sqrt(abs((n1/(n1 - 1)) * S1))
   S1 <- sqrt(abs((Gn1/(Gn1 - 1)) * S1))
   gc()
   P <- class.labels2 * subset.mask
@@ -263,22 +241,14 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
   P2[is.na(A)] <- NA
   Gn2[,m] <- rowSums(P2, na.rm=TRUE)}
-#  n2 <- sum(P[, 1])
-#  M2 <- A %*% P
   M2 <- B %*% P
-#  M2 <- M2/n2
   M2 <- M2/Gn2
   gc()
-#  A2 <- A * A
   B2 <- B * B
-#  S2 <- A2 %*% P
   S2 <- B2 %*% P
-#  S2 <- S2/n2 - M2 * M2
   S2 <- S2/Gn2 - M2 * M2
-#  S2 <- sqrt(abs((n2/(n2 - 1)) * S2))
   S2 <- sqrt(abs((Gn2/(Gn2 - 1)) * S2))
   rm(P)
-#  rm(A2)
   rm(B2)
   gc()
   
@@ -304,26 +274,32 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
  if (rank.metric == "ttest") {
   # compute TTest for the random permutation matrix
   P <- reshuffled.class.labels1 * subset.mask
-  n1 <- sum(P[, 1])
-  M1 <- A %*% P
-  M1 <- M1/n1
+  for (m in 1:nperm) {
+  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
+  P2[is.na(A)] <- NA
+  Gn1[,m] <- rowSums(P2, na.rm=TRUE)}
+  M1 <- B %*% P
+  M1 <- M1/Gn1
   gc()
-  A2 <- A * A
-  S1 <- A2 %*% P
-  S1 <- S1/n1 - M1 * M1
-  S1 <- sqrt(abs((n1/(n1 - 1)) * S1))
+  B2 <- B * B
+  S1 <- B2 %*% P
+  S1 <- S1/Gn1 - M1 * M1
+  S1 <- sqrt(abs((Gn1/(Gn1 - 1)) * S1))
   gc()
   P <- reshuffled.class.labels2 * subset.mask
-  n2 <- sum(P[, 1])
-  M2 <- A %*% P
-  M2 <- M2/n2
+  for (m in 1:nperm) {
+  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
+  P2[is.na(A)] <- NA
+  Gn2[,m] <- rowSums(P2, na.rm=TRUE)}
+  M2 <- B %*% P
+  M2 <- M2/Gn2
   gc()
-  A2 <- A * A
-  S2 <- A2 %*% P
-  S2 <- S2/n2 - M2 * M2
-  S2 <- sqrt(abs((n2/(n2 - 1)) * S2))
+  B2 <- B * B
+  S2 <- B2 %*% P
+  S2 <- S2/Gn2 - M2 * M2
+  S2 <- sqrt(abs((Gn2/(Gn2 - 1)) * S2))
   rm(P)
-  rm(A2)
+  rm(B2)
   gc()
   
   if (sigma.correction == "GeneCluster") {
@@ -338,8 +314,8 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   M1 <- M1 - M2
   rm(M2)
   gc()
-  S1 <- (S1^2)/class1.size
-  S2 <- (S2^2)/class2.size
+  S1 <- (S1^2)/Gn1
+  S2 <- (S2^2)/Gn2
   S1 <- S1 + S2
   S1 <- sqrt(S1)
   rm(S2)
@@ -359,26 +335,32 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   # compute TTest for the 'observed' permutation matrix
   
   P <- class.labels1 * subset.mask
-  n1 <- sum(P[, 1])
-  M1 <- A %*% P
-  M1 <- M1/n1
+  for (m in 1:nperm) {
+  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
+  P2[is.na(A)] <- NA
+  Gn1[,m] <- rowSums(P2, na.rm=TRUE)}
+  M1 <- B %*% P
+  M1 <- M1/Gn1
   gc()
-  A2 <- A * A
-  S1 <- A2 %*% P
-  S1 <- S1/n1 - M1 * M1
-  S1 <- sqrt(abs((n1/(n1 - 1)) * S1))
+  B2 <- B * B
+  S1 <- B2 %*% P
+  S1 <- S1/Gn1 - M1 * M1
+  S1 <- sqrt(abs((Gn1/(Gn1 - 1)) * S1))
   gc()
   P <- class.labels2 * subset.mask
-  n2 <- sum(P[, 1])
-  M2 <- A %*% P
-  M2 <- M2/n2
+  for (m in 1:nperm) {
+  P2 <- do.call("rbind", replicate(nrow(A), P[,m], simplify = FALSE))
+  P2[is.na(A)] <- NA
+  Gn2[,m] <- rowSums(P2, na.rm=TRUE)}
+  M2 <- B %*% P
+  M2 <- M2/Gn2
   gc()
-  A2 <- A * A
-  S2 <- A2 %*% P
-  S2 <- S2/n2 - M2 * M2
-  S2 <- sqrt(abs((n2/(n2 - 1)) * S2))
+  B2 <- B * B
+  S2 <- B2 %*% P
+  S2 <- S2/Gn2 - M2 * M2
+  S2 <- sqrt(abs((Gn2/(Gn2 - 1)) * S2))
   rm(P)
-  rm(A2)
+  rm(B2)
   gc()
   
   if (sigma.correction == "GeneCluster") {
@@ -393,8 +375,8 @@ GSEA.GeneRanking <- function(A, class.labels, gene.labels, nperm, permutation.ty
   M1 <- M1 - M2
   rm(M2)
   gc()
-  S1 <- (S1^2)/class1.size
-  S2 <- (S2^2)/class2.size
+  S1 <- (S1^2)/Gn1
+  S2 <- (S2^2)/Gn2
   S1 <- S1 + S2
   S1 <- sqrt(S1)
   rm(S2)
