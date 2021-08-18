@@ -226,11 +226,13 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
    colnames(dataset)[1] <- "NAME"
    colnames(dataset)[2] <- "Description"
    dataset <- dataset[match(unique(dataset$NAME), dataset$NAME), ]
+   dataset[, c(3:ncol(dataset))] <- sapply(dataset[, c(3:ncol(dataset))], 
+    as.numeric)
+   dataset <- dataset[rowSums(is.na(dataset[, 3:ncol(dataset)])) != ncol(dataset[, 
+    3:ncol(dataset)]), ]
    dataset.ann <- dataset[, c("NAME", "Description")]
    colnames(dataset.ann)[1] <- "Gene.Symbol"
    colnames(dataset.ann)[2] <- "Gene.Title"
-   dataset[, c(3:ncol(dataset))] <- sapply(dataset[, c(3:ncol(dataset))], 
-    as.numeric)
   } else if (collapse.dataset == TRUE) {
    chip <- GSEA.ReadCHIPFile(file = input.chip)
    collapseddataset <- GSEA.CollapseDataset(dataplatform = chip, gct = dataset, 
@@ -241,7 +243,6 @@ GSEA <- function(input.ds, input.cls, input.chip = "NOCHIP", gene.ann = "", gs.d
   gene.map <- dataset[, c(1, 2)]
   dataset <- dataset[, -1]
   dataset <- dataset[, -1]
-  dataset <- dataset[rowSums(is.na(dataset)) != ncol(dataset), ]
   
   gene.labels <- row.names(dataset)
   sample.names <- colnames(dataset[1:length(colnames(dataset))])
